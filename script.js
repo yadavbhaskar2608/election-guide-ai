@@ -1,11 +1,51 @@
+/**
+ * @fileoverview Election Guide AI Assistant – script.js
+ * @description Main JavaScript module for the Election Guide AI web application.
+ *   Handles chat logic, navigation, scroll events, animations, and GA4 event tracking.
+ * @version 2.0.0
+ */
+
+'use strict';
+
 // ============================================================
-//  Election Guide AI Assistant – script.js
+// CONSTANTS
 // ============================================================
 
-// ---------- Knowledge Base ----------
+/** Minimum simulated bot response delay in milliseconds */
+const TYPING_DELAY_MIN = 900;
+
+/** Random extra delay range added to the minimum (ms) */
+const TYPING_DELAY_RANGE = 600;
+
+/** Maximum allowed input length in characters */
+const INPUT_MAX_LENGTH = 500;
+
+/** Scroll threshold (px) to trigger navbar shrink */
+const NAVBAR_SCROLL_THRESHOLD = 60;
+
+/** Scroll threshold (px) to show Back-to-Top button */
+const BACK_TO_TOP_THRESHOLD = 400;
+
+/** Viewport offset (px) below navbar to detect active section */
+const ACTIVE_SECTION_OFFSET = 80;
+
+/** Ordered list of section IDs for nav highlighting */
+const SECTION_IDS = ['home', 'assistant', 'guide', 'timeline'];
+
+// ============================================================
+// KNOWLEDGE BASE
+// ============================================================
+
+/**
+ * @typedef {Object} KBTopic
+ * @property {string[]} [keys] - Keywords that trigger this topic
+ * @property {string} answer - Response text (supports **bold** and *italic* markdown)
+ */
+
+/** @type {Object.<string, KBTopic>} */
 const KB = {
   greetings: {
-    keys: ["hi", "hello", "hey", "namaste", "namaskar", "hlo", "hii"],
+    keys: ['hi', 'hello', 'hey', 'namaste', 'namaskar', 'hlo', 'hii'],
     answer: `Namaste! 🙏 Welcome to **Election Guide AI Assistant**.
 
 I'm here to help you understand India's election process in simple language. You can ask me about:
@@ -18,7 +58,7 @@ What would you like to know?`
   },
 
   howToVote: {
-    keys: ["how to vote", "voting process", "how do i vote", "vote kaise kare", "how can i vote", "voting procedure", "how to cast vote", "cast vote"],
+    keys: ['how to vote', 'voting process', 'how do i vote', 'vote kaise kare', 'how can i vote', 'voting procedure', 'how to cast vote', 'cast vote'],
     answer: `Here's how you can vote in India — step by step! 🗳️
 
 **Step 1 – Register as a Voter**
@@ -40,7 +80,7 @@ That's it — you've voted! Your vote is completely **secret and secure**. 🔒`
   },
 
   voterId: {
-    keys: ["voter id", "epic card", "check voter id", "voter id card", "voter registration", "how to get voter id", "apply voter id", "voter card", "new voter id"],
+    keys: ['voter id', 'epic card', 'check voter id', 'voter id card', 'voter registration', 'how to get voter id', 'apply voter id', 'voter card', 'new voter id'],
     answer: `Here's everything you need to know about Voter ID (EPIC Card): 🪪
 
 **What is Voter ID?**
@@ -58,15 +98,14 @@ It's officially called **EPIC** (Electors Photo Identity Card), issued free of c
 - Or call 📞 **1950** (Voter Helpline, free)
 
 **Can I Vote Without Voter ID?**
-Yes! 11 alternative photo IDs are accepted:
-Aadhaar, Passport, Driving Licence, PAN Card, Bank Passbook with photo, MNREGA Job Card, and more.
+Yes! 11 alternative photo IDs are accepted: Aadhaar, Passport, Driving Licence, PAN Card, Bank Passbook with photo, MNREGA Job Card, and more.
 
 **Download Digital Voter ID:**
 You can download your **e-EPIC** (digital Voter ID) instantly from the Voter Helpline App or voters.eci.gov.in 📲`
   },
 
   votingRules: {
-    keys: ["voting rules", "rules for voting", "election rules", "dos and donts", "what are the rules", "booth rules", "polling booth rules"],
+    keys: ['voting rules', 'rules for voting', 'election rules', 'dos and donts', 'what are the rules', 'booth rules', 'polling booth rules'],
     answer: `Here are the important voting rules you must know! 📜
 
 **✅ DOs at the Polling Booth:**
@@ -92,12 +131,12 @@ You can download your **e-EPIC** (digital Voter ID) instantly from the Voter Hel
   },
 
   nota: {
-    keys: ["nota", "none of the above", "what is nota", "nota option", "nota button"],
+    keys: ['nota', 'none of the above', 'what is nota', 'nota option', 'nota button'],
     answer: `Great question! NOTA is an important democratic right. ❌
 
 **NOTA = None Of The Above**
 
-Introduced in **2013** by the Supreme Court of India, NOTA allows voters to reject all candidates if they don't find anyone worthy of their vote.
+Introduced in **2013** by the Supreme Court of India, NOTA allows voters to reject all candidates if they don't find anyone worthy.
 
 **How to Use NOTA?**
 - On the EVM, NOTA is the **last option** at the bottom
@@ -105,11 +144,11 @@ Introduced in **2013** by the Supreme Court of India, NOTA allows voters to reje
 - Press that button just like any other candidate
 
 **Does NOTA Win?**
-No. Even if NOTA gets the most votes, the candidate with the **second-highest votes** wins. NOTA votes are counted but don't result in re-election.
+No. Even if NOTA gets the most votes, the candidate with the **second-highest votes** wins.
 
 **Why is NOTA Important?**
 ✅ It sends a message that voters are unhappy with all candidates
-✅ It ensures your vote is not wasted (if you don't like anyone)
+✅ It ensures your vote is not wasted
 ✅ It protects your right to express dissent
 ✅ High NOTA % puts pressure on parties to field better candidates
 
@@ -117,7 +156,7 @@ NOTA is your right — use it wisely! 💪`
   },
 
   documents: {
-    keys: ["documents", "documents required", "id proof", "what documents", "what to carry", "id for voting", "required documents", "id required"],
+    keys: ['documents', 'documents required', 'id proof', 'what documents', 'what to carry', 'id for voting', 'required documents', 'id required'],
     answer: `Here are the documents accepted at Indian polling booths! 📄
 
 **Primary Document:**
@@ -140,13 +179,13 @@ NOTA is your right — use it wisely! 💪`
 **Remember:**
 - You only need **ONE** of these documents
 - Documents must have your **photograph**
-- No document is needed for your **name to be in the voter list** — that's the most important thing!
+- Your **name must be in the voter list** — that's the most important thing!
 
-💡 **Tip:** Always check your name in the voter list first at electoralsearch.eci.gov.in`
+💡 **Tip:** Always check your name at electoralsearch.eci.gov.in`
   },
 
   evm: {
-    keys: ["evm", "electronic voting machine", "how does evm work", "vvpat", "voting machine"],
+    keys: ['evm', 'electronic voting machine', 'how does evm work', 'vvpat', 'voting machine'],
     answer: `Let's understand EVM & VVPAT — India's voting technology! ⚡
 
 **What is EVM?**
@@ -167,16 +206,15 @@ VVPAT = **Voter Verified Paper Audit Trail**
 - After you vote, it shows a **paper slip** for 7 seconds
 - Shows your chosen candidate's name & symbol
 - The slip drops into a sealed box (for audit if needed)
-- This ensures your vote is recorded correctly 🔍
 
 **Is EVM Secure?**
-✅ EVMs are standalone machines — not connected to internet
+✅ EVMs are standalone — not connected to internet
 ✅ Tamper-proof hardware
 ✅ Used successfully since 1982 in India`
   },
 
   eligibility: {
-    keys: ["eligibility", "who can vote", "age to vote", "voting age", "am i eligible", "can i vote"],
+    keys: ['eligibility', 'who can vote', 'age to vote', 'voting age', 'am i eligible', 'can i vote'],
     answer: `Here's who can vote in India! 🗳️
 
 **Basic Eligibility to Vote:**
@@ -194,7 +232,7 @@ VVPAT = **Voter Verified Paper Audit Trail**
 ❌ Persons disqualified under Representation of People Act
 
 **Can NRIs Vote?**
-Yes! Since 2011, **NRIs (Non-Resident Indians)** who haven't acquired citizenship of another country can register as overseas voters and vote in their home constituency.
+Yes! Since 2011, **NRIs** who haven't acquired foreign citizenship can register as overseas voters.
 
 **Register at:** voters.eci.gov.in 📲`
   },
@@ -212,191 +250,459 @@ But here are the topics I can help you with:
 ⚡ **"What is EVM"** — About voting machines
 👤 **"Who can vote"** — Voter eligibility
 
-You can also use the **quick buttons** below to get instant answers!
+You can also use the **quick buttons** below for instant answers!
 
-Or call the Voter Helpline: 📞 **1950** (Free, 24x7)`
+Or call the Voter Helpline: 📞 **1950** (Free, 24×7)`
   }
 };
 
-// ---------- Find Answer ----------
+// ============================================================
+// DOM REFERENCES (cached for efficiency)
+// ============================================================
+
+/** @type {HTMLElement} */
+let chatMessages;
+
+/** @type {HTMLInputElement} */
+let chatInput;
+
+/** @type {HTMLButtonElement} */
+let sendBtn;
+
+/** @type {HTMLElement} */
+let navbar;
+
+/** @type {HTMLButtonElement} */
+let backToTop;
+
+/** @type {HTMLButtonElement} */
+let hamburger;
+
+/** @type {HTMLUListElement} */
+let navLinks;
+
+/** @type {NodeListOf<HTMLAnchorElement>} */
+let navLinkItems;
+
+// ============================================================
+// UTILITIES
+// ============================================================
+
+/**
+ * Safely escapes a string to prevent XSS when inserted into HTML.
+ * @param {string} str - Raw user input string
+ * @returns {string} HTML-escaped string
+ */
+function escapeHtml(str) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  return str.replace(/[&<>"']/g, (ch) => map[ch]);
+}
+
+/**
+ * Converts a limited subset of Markdown to safe HTML.
+ * Only allows **bold**, *italic*, newlines, and bullet lists.
+ * Does NOT use innerHTML with raw user input — all user text is escaped first.
+ * @param {string} text - Markdown-style text
+ * @returns {string} Safe HTML string
+ */
+function renderMarkdown(text) {
+  // Escape first, then apply safe formatting
+  const escaped = escapeHtml(text);
+  return escaped
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br />')
+    .replace(/^/, '<p>')
+    .replace(/$/, '</p>');
+}
+
+/**
+ * Returns the current time formatted as HH:MM (12-hour, Indian locale).
+ * @returns {string} Formatted time string
+ */
+function getTime() {
+  return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ============================================================
+// CHAT LOGIC
+// ============================================================
+
+/**
+ * Finds a matching answer from the knowledge base for a given user input.
+ * Checks all topic keyword arrays for substring matches.
+ * @param {string} input - Raw user input string
+ * @returns {string} Answer text from the knowledge base
+ */
 function findAnswer(input) {
   const text = input.toLowerCase().trim();
 
-  for (const [, topic] of Object.entries(KB)) {
-    if (!topic.keys) continue;
-    if (topic.keys.some(key => text.includes(key))) {
-      return topic.answer;
-    }
+  // Greeting check (exact or word-boundary match)
+  if (KB.greetings.keys.some(k => text === k || text.startsWith(k + ' ') || text.endsWith(' ' + k))) {
+    return KB.greetings.answer;
   }
 
-  // Greeting check
-  if (KB.greetings.keys.some(k => text === k || text.startsWith(k + " ") || text.endsWith(" " + k))) {
-    return KB.greetings.answer;
+  for (const [key, topic] of Object.entries(KB)) {
+    if (key === 'greetings' || key === 'default') continue;
+    if (!topic.keys) continue;
+    if (topic.keys.some(kw => text.includes(kw))) {
+      return topic.answer;
+    }
   }
 
   return KB.default.answer;
 }
 
-// ---------- Render Markdown (simple) ----------
-function renderMarkdown(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/\n/g, "<br/>")
-    .replace(/^/, "<p>")
-    .replace(/$/, "</p>");
-}
-
-// ---------- Get Time String ----------
-function getTime() {
-  return new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
-}
-
-// ---------- Append Message ----------
+/**
+ * Appends a message bubble to the chat messages container.
+ * @param {string} text - The message text (supports Markdown for bot messages)
+ * @param {boolean} [isUser=false] - Whether this is a user message
+ */
 function appendMessage(text, isUser = false) {
-  const messages = document.getElementById("chatMessages");
+  const div = document.createElement('div');
+  div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
 
-  const div = document.createElement("div");
-  div.className = `message ${isUser ? "user-message" : "bot-message"}`;
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.setAttribute('aria-hidden', 'true');
+  avatar.textContent = isUser ? '👤' : '🤖';
 
-  const avatar = document.createElement("div");
-  avatar.className = "message-avatar";
-  avatar.textContent = isUser ? "👤" : "🤖";
+  const bubble = document.createElement('div');
+  bubble.className = 'message-bubble';
 
-  const bubble = document.createElement("div");
-  bubble.className = "message-bubble";
-  bubble.innerHTML = renderMarkdown(text) + `<div class="message-time">${getTime()}</div>`;
+  // For bot messages: apply safe markdown rendering
+  // For user messages: escape and display as plain text in a paragraph
+  const contentHtml = isUser
+    ? `<p>${escapeHtml(text)}</p>`
+    : renderMarkdown(text);
+
+  const timeEl = document.createElement('div');
+  timeEl.className = 'message-time';
+  timeEl.setAttribute('aria-label', `Sent at ${getTime()}`);
+  timeEl.textContent = getTime();
+
+  // Use insertAdjacentHTML with sanitized content only
+  bubble.innerHTML = contentHtml;
+  bubble.appendChild(timeEl);
 
   div.appendChild(avatar);
   div.appendChild(bubble);
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// ---------- Show Typing Indicator ----------
+/**
+ * Shows the animated typing indicator in the chat.
+ */
 function showTyping() {
-  const messages = document.getElementById("chatMessages");
-  const div = document.createElement("div");
-  div.className = "message bot-message";
-  div.id = "typingIndicator";
+  const div = document.createElement('div');
+  div.className = 'message bot-message';
+  div.id = 'typingIndicator';
+  div.setAttribute('aria-label', 'Chunav Mitra is typing');
 
-  div.innerHTML = `
-    <div class="message-avatar">🤖</div>
-    <div class="message-bubble">
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>`;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.setAttribute('aria-hidden', 'true');
+  avatar.textContent = '🤖';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'message-bubble';
+
+  const indicator = document.createElement('div');
+  indicator.className = 'typing-indicator';
+  indicator.setAttribute('aria-hidden', 'true');
+
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'typing-dot';
+    indicator.appendChild(dot);
+  }
+
+  bubble.appendChild(indicator);
+  div.appendChild(avatar);
+  div.appendChild(bubble);
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+/**
+ * Removes the typing indicator from the chat.
+ */
 function hideTyping() {
-  const el = document.getElementById("typingIndicator");
+  const el = document.getElementById('typingIndicator');
   if (el) el.remove();
 }
 
-// ---------- Send Message ----------
+/**
+ * Sends the current chat input as a user message and triggers a bot response.
+ * Validates input length and prevents empty submissions.
+ */
 function sendMessage() {
-  const input = document.getElementById("chatInput");
-  const sendBtn = document.getElementById("sendBtn");
-  const text = input.value.trim();
+  const text = chatInput.value.trim();
   if (!text) return;
+  if (text.length > INPUT_MAX_LENGTH) {
+    chatInput.value = chatInput.value.slice(0, INPUT_MAX_LENGTH);
+    return;
+  }
 
   appendMessage(text, true);
-  input.value = "";
+  chatInput.value = '';
   sendBtn.disabled = true;
+  chatInput.setAttribute('aria-busy', 'true');
+
+  // Track chat event in GA4
+  if (typeof gtag === 'function') {
+    gtag('event', 'chat_message_sent', {
+      event_category: 'Chat',
+      event_label: text.slice(0, 100)
+    });
+  }
 
   showTyping();
 
+  const delay = TYPING_DELAY_MIN + Math.random() * TYPING_DELAY_RANGE;
   setTimeout(() => {
     hideTyping();
     const answer = findAnswer(text);
     appendMessage(answer, false);
     sendBtn.disabled = false;
-    input.focus();
-  }, 900 + Math.random() * 600);
+    chatInput.setAttribute('aria-busy', 'false');
+    chatInput.focus();
+  }, delay);
 }
 
+/**
+ * Sends a pre-filled quick question to the chat.
+ * @param {string} topic - The quick question text
+ */
 function sendQuickMessage(topic) {
-  const input = document.getElementById("chatInput");
-  input.value = topic;
+  chatInput.value = topic;
+
+  // Track quick button click in GA4
+  if (typeof gtag === 'function') {
+    gtag('event', 'quick_button_clicked', {
+      event_category: 'Chat',
+      event_label: topic
+    });
+  }
+
   sendMessage();
 }
 
-function handleKeyPress(event) {
-  if (event.key === "Enter") sendMessage();
-}
-
+/**
+ * Clears all chat messages and shows a fresh greeting.
+ */
 function clearChat() {
-  const messages = document.getElementById("chatMessages");
-  messages.innerHTML = "";
-  appendMessage("Chat cleared! 🧹 Feel free to ask me anything about Indian elections.", false);
+  chatMessages.innerHTML = '';
+  appendMessage('Chat cleared! 🧹 Feel free to ask me anything about Indian elections.', false);
 }
 
-// ---------- Navigation ----------
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+/**
+ * Smoothly scrolls to the section with the given ID, accounting for navbar height.
+ * Also closes the mobile menu if open.
+ * @param {string} id - The section element ID to scroll to
+ */
 function scrollToSection(id) {
   const el = document.getElementById(id);
-  if (el) {
-    const navH = document.querySelector(".navbar").offsetHeight;
-    const top = el.getBoundingClientRect().top + window.scrollY - navH;
-    window.scrollTo({ top, behavior: "smooth" });
-  }
+  if (!el) return;
+
+  const navH = navbar.offsetHeight;
+  const top = el.getBoundingClientRect().top + window.scrollY - navH;
+  window.scrollTo({ top, behavior: 'smooth' });
+
   // Close mobile menu
-  document.getElementById("navLinks").classList.remove("open");
+  navLinks.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+
+  // Track section navigation in GA4
+  if (typeof gtag === 'function') {
+    gtag('event', 'section_navigate', {
+      event_category: 'Navigation',
+      event_label: id
+    });
+  }
 }
 
+/**
+ * Toggles the mobile navigation menu open/closed.
+ */
 function toggleMenu() {
-  document.getElementById("navLinks").classList.toggle("open");
+  const isOpen = navLinks.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(isOpen));
 }
 
-// ---------- Scroll Events ----------
-window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY;
+// ============================================================
+// SCROLL HANDLING (rAF throttled for efficiency)
+// ============================================================
 
-  // Navbar shrink
-  document.getElementById("navbar").classList.toggle("scrolled", scrollY > 60);
+/** @type {boolean} Prevents queuing multiple rAF calls */
+let scrollTicking = false;
 
-  // Back to top
-  document.getElementById("backToTop").classList.toggle("visible", scrollY > 400);
+/**
+ * Handles all scroll-based UI updates:
+ * - Navbar shrink on scroll
+ * - Back-to-top button visibility
+ * - Active nav link highlighting
+ */
+function handleScroll() {
+  if (scrollTicking) return;
+  scrollTicking = true;
 
-  // Active nav link
-  const sections = ["home", "assistant", "guide", "timeline"];
-  const navLinks = document.querySelectorAll(".nav-link");
-  const navH = document.querySelector(".navbar").offsetHeight;
+  requestAnimationFrame(() => {
+    const scrollY = window.scrollY;
+    const navH = navbar.offsetHeight;
 
-  sections.forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    if (rect.top <= navH + 80 && rect.bottom > navH + 80) {
-      navLinks.forEach(l => l.classList.remove("active"));
-      navLinks[i].classList.add("active");
-    }
+    // Navbar shrink
+    navbar.classList.toggle('scrolled', scrollY > NAVBAR_SCROLL_THRESHOLD);
+
+    // Back to top visibility
+    backToTop.classList.toggle('visible', scrollY > BACK_TO_TOP_THRESHOLD);
+
+    // Active nav link detection
+    SECTION_IDS.forEach((id, i) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= navH + ACTIVE_SECTION_OFFSET && rect.bottom > navH + ACTIVE_SECTION_OFFSET) {
+        navLinkItems.forEach(l => l.classList.remove('active'));
+        if (navLinkItems[i]) navLinkItems[i].classList.add('active');
+      }
+    });
+
+    scrollTicking = false;
   });
-});
+}
 
-// ---------- Intersection Observer for Cards ----------
-const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -60px 0px" };
-const observer = new IntersectionObserver((entries) => {
+// ============================================================
+// INTERSECTION OBSERVER (scroll-in animations)
+// ============================================================
+
+/** @type {IntersectionObserverInit} */
+const OBSERVER_OPTIONS = { threshold: 0.1, rootMargin: '0px 0px -60px 0px' };
+
+/**
+ * Reveals animated cards when they enter the viewport.
+ * @type {IntersectionObserver}
+ */
+const cardObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity = "1";
-      entry.target.style.transform = "translateY(0)";
-      observer.unobserve(entry.target);
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      cardObserver.unobserve(entry.target);
     }
   });
-}, observerOptions);
+}, OBSERVER_OPTIONS);
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Animate cards on scroll
-  document.querySelectorAll(".guide-card, .timeline-card, .fact-card, .stat-card").forEach(el => {
-    el.style.opacity = "0";
-    el.style.transform = "translateY(24px)";
-    el.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-    observer.observe(el);
+// ============================================================
+// INITIALISATION
+// ============================================================
+
+/**
+ * Initialises the application after the DOM is fully loaded.
+ * Caches DOM references, attaches event listeners, and sets up observers.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Cache DOM references
+  chatMessages = document.getElementById('chatMessages');
+  chatInput    = document.getElementById('chatInput');
+  sendBtn      = document.getElementById('sendBtn');
+  navbar       = document.getElementById('navbar');
+  backToTop    = document.getElementById('backToTop');
+  hamburger    = document.getElementById('hamburger');
+  navLinks     = document.getElementById('navLinks');
+  navLinkItems = document.querySelectorAll('.nav-link');
+
+  // Guard: exit early if core elements are missing (e.g., test runner page)
+  if (!chatMessages || !chatInput || !sendBtn || !navbar) return;
+
+  // Scroll events
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Chat events
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  document.getElementById('clearChatBtn').addEventListener('click', clearChat);
+
+  // Quick buttons (event delegation)
+  document.getElementById('quickButtons').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-topic]');
+    if (btn) sendQuickMessage(btn.dataset.topic);
+  });
+
+  // Hamburger toggle
+  hamburger.addEventListener('click', toggleMenu);
+
+  // Nav links — smooth scroll
+  navLinkItems.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = link.getAttribute('href').replace('#', '');
+      scrollToSection(target);
+    });
+  });
+
+  // Hero buttons
+  const heroButtonMap = {
+    btnChatAssistant: 'assistant',
+    btnVotingGuide:   'guide',
+    btnTimeline:      'timeline'
+  };
+  Object.entries(heroButtonMap).forEach(([btnId, sectionId]) => {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.addEventListener('click', () => scrollToSection(sectionId));
+  });
+
+  // Scroll indicator
+  const scrollIndicator = document.getElementById('scrollIndicator');
+  if (scrollIndicator) {
+    scrollIndicator.addEventListener('click', () => scrollToSection('assistant'));
+  }
+
+  // Back to top
+  backToTop.addEventListener('click', () => scrollToSection('home'));
+
+  // Card scroll-in animations
+  document.querySelectorAll('.guide-card, .timeline-card, .fact-card, .stat-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    cardObserver.observe(el);
+  });
+
+  // External link GA4 tracking
+  document.querySelectorAll('a[target="_blank"]').forEach(link => {
+    link.addEventListener('click', () => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'external_link_click', {
+          event_category: 'Outbound',
+          event_label: link.href
+        });
+      }
+    });
   });
 });
+
+// ============================================================
+// PUBLIC API (exported for testing)
+// ============================================================
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { findAnswer, renderMarkdown, getTime, escapeHtml };
+} else {
+  // Browser: expose testable functions as globals for script.test.js
+  window.findAnswer     = findAnswer;
+  window.renderMarkdown = renderMarkdown;
+  window.getTime        = getTime;
+  window.escapeHtml     = escapeHtml;
+}

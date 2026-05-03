@@ -3,374 +3,387 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src https://www.google-analytics.com; img-src 'self' data: https://www.google-analytics.com;" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+
+  <!-- SEO -->
   <meta name="description" content="Election Guide AI Assistant – Learn about the Indian election process, voting steps, timelines, and more in a simple, beginner-friendly way." />
+  <meta name="keywords" content="India election guide, how to vote India, voter ID, EVM, NOTA, Lok Sabha 2024, voter registration, election commission India, polling booth" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#FF6B35" />
   <title>Election Guide AI Assistant (India)</title>
-  <link rel="stylesheet" href="style.css" />
+
+  <!-- Open Graph / Twitter Card -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Election Guide AI Assistant (India)" />
+  <meta property="og:description" content="Your smart companion to understand India's democratic process. Ask questions, explore voting steps, and know your rights." />
+  <meta property="og:url" content="https://yadavbhaskar2608.github.io/election-guide-ai/" />
+  <meta property="og:locale" content="en_IN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Election Guide AI Assistant (India)" />
+  <meta name="twitter:description" content="Your smart companion to understand India's democratic process." />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Election Guide AI Assistant",
+    "description": "An interactive AI-powered chatbot guiding Indian citizens through the election process, voting steps, voter ID information, and election timelines.",
+    "url": "https://yadavbhaskar2608.github.io/election-guide-ai/",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "inLanguage": "en-IN",
+    "audience": { "@type": "Audience", "audienceType": "Indian citizens and voters" },
+    "provider": { "@type": "Organization", "name": "Election Commission of India", "url": "https://eci.gov.in" }
+  }
+  </script>
+
+  <!-- Resource hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSQDPT6TTK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XSQDPT6TTK', { page_title: 'Election Guide AI Assistant', page_location: window.location.href });
+  </script>
 </head>
 <body>
 
-  <!-- ========== NAVBAR ========== -->
-  <nav class="navbar" id="navbar">
+  <!-- Skip Navigation (Accessibility) -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-brand">
-      <span class="nav-flag">🇮🇳</span>
+      <span class="nav-flag" aria-hidden="true">🇮🇳</span>
       <span class="nav-title">Election Guide AI</span>
     </div>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#home" class="nav-link active" onclick="scrollToSection('home')">Home</a></li>
-      <li><a href="#assistant" class="nav-link" onclick="scrollToSection('assistant')">Assistant</a></li>
-      <li><a href="#guide" class="nav-link" onclick="scrollToSection('guide')">Voting Guide</a></li>
-      <li><a href="#timeline" class="nav-link" onclick="scrollToSection('timeline')">Timeline</a></li>
+    <ul class="nav-links" id="navLinks" role="menubar">
+      <li role="none"><a href="#home"      class="nav-link active" id="navHome"      role="menuitem">Home</a></li>
+      <li role="none"><a href="#assistant" class="nav-link"        id="navAssistant" role="menuitem">Assistant</a></li>
+      <li role="none"><a href="#guide"     class="nav-link"        id="navGuide"     role="menuitem">Voting Guide</a></li>
+      <li role="none"><a href="#timeline"  class="nav-link"        id="navTimeline"  role="menuitem">Timeline</a></li>
     </ul>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
+    <button class="hamburger" id="hamburger" type="button"
+      aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
     </button>
   </nav>
 
-  <!-- ========== HOME SECTION ========== -->
-  <section class="section" id="home">
-    <div class="hero-bg">
-      <div class="hero-blob blob-1"></div>
-      <div class="hero-blob blob-2"></div>
-      <div class="hero-blob blob-3"></div>
-    </div>
-    <div class="container hero-container">
-      <div class="hero-badge">
-        <span class="badge-dot"></span> India's Election Guide 2024
-      </div>
-      <h1 class="hero-title">
-        Election Guide<br />
-        <span class="gradient-text">AI Assistant</span>
-      </h1>
-      <p class="hero-subtitle">
-        Your smart companion to understand India's democratic process.<br />
-        Ask questions, explore voting steps, and know your rights as a citizen.
-      </p>
-      <div class="hero-buttons">
-        <button class="btn btn-primary" onclick="scrollToSection('assistant')">
-          <span class="btn-icon">🤖</span> Chat with Assistant
-        </button>
-        <button class="btn btn-secondary" onclick="scrollToSection('guide')">
-          <span class="btn-icon">📋</span> View Voting Guide
-        </button>
-        <button class="btn btn-outline" onclick="scrollToSection('timeline')">
-          <span class="btn-icon">📅</span> View Timeline
-        </button>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-card">
-          <div class="stat-number">96 Cr+</div>
-          <div class="stat-label">Registered Voters</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">543</div>
-          <div class="stat-label">Lok Sabha Seats</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">7</div>
-          <div class="stat-label">Election Phases</div>
-        </div>
-      </div>
-    </div>
-    <div class="scroll-indicator" onclick="scrollToSection('assistant')">
-      <span>Scroll to explore</span>
-      <div class="scroll-arrow"></div>
-    </div>
-  </section>
+  <main id="main-content">
 
-  <!-- ========== AI ASSISTANT SECTION ========== -->
-  <section class="section section-alt" id="assistant">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-badge">🤖 AI Powered</div>
-        <h2 class="section-title">Chat with Your <span class="gradient-text">Election Assistant</span></h2>
-        <p class="section-subtitle">Ask anything about India's election process in plain, simple language.</p>
+    <!-- HOME -->
+    <section class="section" id="home" aria-labelledby="homeHeading">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="hero-blob blob-1"></div>
+        <div class="hero-blob blob-2"></div>
+        <div class="hero-blob blob-3"></div>
       </div>
+      <div class="container hero-container">
+        <div class="hero-badge" role="status">
+          <span class="badge-dot" aria-hidden="true"></span> India's Election Guide 2024
+        </div>
+        <h1 class="hero-title" id="homeHeading">
+          Election Guide<br />
+          <span class="gradient-text">AI Assistant</span>
+        </h1>
+        <p class="hero-subtitle">
+          Your smart companion to understand India's democratic process.<br />
+          Ask questions, explore voting steps, and know your rights as a citizen.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary"   id="btnChatAssistant" type="button"><span class="btn-icon" aria-hidden="true">🤖</span> Chat with Assistant</button>
+          <button class="btn btn-secondary" id="btnVotingGuide"   type="button"><span class="btn-icon" aria-hidden="true">📋</span> View Voting Guide</button>
+          <button class="btn btn-outline"   id="btnTimeline"      type="button"><span class="btn-icon" aria-hidden="true">📅</span> View Timeline</button>
+        </div>
+        <div class="hero-stats" role="list" aria-label="Election statistics">
+          <div class="stat-card" role="listitem"><div class="stat-number" aria-label="96 crore plus">96 Cr+</div><div class="stat-label">Registered Voters</div></div>
+          <div class="stat-card" role="listitem"><div class="stat-number" aria-label="543">543</div><div class="stat-label">Lok Sabha Seats</div></div>
+          <div class="stat-card" role="listitem"><div class="stat-number" aria-label="7">7</div><div class="stat-label">Election Phases</div></div>
+        </div>
+      </div>
+      <button class="scroll-indicator" id="scrollIndicator" type="button" aria-label="Scroll down to AI assistant">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow" aria-hidden="true"></div>
+      </button>
+    </section>
 
-      <div class="chat-wrapper">
-        <div class="chat-card">
-          <!-- Chat Header -->
-          <div class="chat-header">
-            <div class="chat-avatar">
-              <span>🤖</span>
-              <div class="online-dot"></div>
+    <!-- AI ASSISTANT -->
+    <section class="section section-alt" id="assistant" aria-labelledby="assistantHeading">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" aria-hidden="true">🤖 AI Powered</div>
+          <h2 class="section-title" id="assistantHeading">Chat with Your <span class="gradient-text">Election Assistant</span></h2>
+          <p class="section-subtitle">Ask anything about India's election process in plain, simple language.</p>
+        </div>
+        <div class="chat-wrapper">
+          <div class="chat-card" role="region" aria-label="Chunav Mitra chat interface">
+            <div class="chat-header">
+              <div class="chat-avatar" aria-hidden="true">
+                <span>🤖</span>
+                <div class="online-dot"></div>
+              </div>
+              <div class="chat-info">
+                <div class="chat-name">Chunav Mitra</div>
+                <div class="chat-status" aria-live="polite">Online · Election Guide Bot</div>
+              </div>
+              <button class="chat-clear-btn" id="clearChatBtn" type="button" aria-label="Clear chat history" title="Clear chat">🗑️</button>
             </div>
-            <div class="chat-info">
-              <div class="chat-name">Chunav Mitra</div>
-              <div class="chat-status">Online · Election Guide Bot</div>
+            <div class="chat-messages" id="chatMessages"
+              role="log" aria-label="Chat conversation"
+              aria-live="polite" aria-atomic="false" aria-relevant="additions" tabindex="0">
+              <div class="message bot-message">
+                <div class="message-avatar" aria-hidden="true">🤖</div>
+                <div class="message-bubble">
+                  <p>Namaste! 🙏 I'm <strong>Chunav Mitra</strong>, your Election Guide Assistant.</p>
+                  <p>I can help you with:</p>
+                  <ul>
+                    <li>How to vote in India</li>
+                    <li>Voter ID information</li>
+                    <li>NOTA and voting rules</li>
+                    <li>Election documents needed</li>
+                  </ul>
+                  <p>Ask me anything or use the quick buttons below! 😊</p>
+                  <div class="message-time" aria-label="Sent just now">Just now</div>
+                </div>
+              </div>
             </div>
-            <button class="chat-clear-btn" onclick="clearChat()" title="Clear chat">🗑️</button>
+            <div class="quick-buttons" id="quickButtons" role="group" aria-label="Quick question shortcuts">
+              <button class="quick-btn" data-topic="how to vote"       type="button">🗳️ How to vote</button>
+              <button class="quick-btn" data-topic="check voter id"    type="button">🪪 Check Voter ID</button>
+              <button class="quick-btn" data-topic="voting rules"      type="button">📜 Voting rules</button>
+              <button class="quick-btn" data-topic="what is nota"      type="button">❌ What is NOTA</button>
+              <button class="quick-btn" data-topic="documents required" type="button">📄 Documents needed</button>
+            </div>
+            <div class="chat-input-area" role="group" aria-label="Send a message">
+              <label for="chatInput" class="visually-hidden">Type your election question</label>
+              <input type="text" id="chatInput" class="chat-input"
+                placeholder="Type your question here..."
+                autocomplete="off" maxlength="500"
+                aria-label="Type your election question"
+                aria-describedby="chatInputHint" />
+              <span id="chatInputHint" class="visually-hidden">Press Enter or click Send to submit</span>
+              <button class="send-btn" id="sendBtn" type="button" aria-label="Send message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- Chat Messages -->
-          <div class="chat-messages" id="chatMessages">
-            <div class="message bot-message">
-              <div class="message-avatar">🤖</div>
-              <div class="message-bubble">
-                <p>Namaste! 🙏 I'm <strong>Chunav Mitra</strong>, your Election Guide Assistant.</p>
-                <p>I can help you with:</p>
-                <ul>
-                  <li>How to vote in India</li>
-                  <li>Voter ID information</li>
-                  <li>NOTA and voting rules</li>
-                  <li>Election documents needed</li>
-                </ul>
-                <p>Ask me anything or use the quick buttons below! 😊</p>
-                <div class="message-time">Just now</div>
+    <!-- VOTING GUIDE -->
+    <section class="section" id="guide" aria-labelledby="guideHeading">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" aria-hidden="true">📋 Step by Step</div>
+          <h2 class="section-title" id="guideHeading">Your Complete <span class="gradient-text">Voting Guide</span></h2>
+          <p class="section-subtitle">Follow these simple steps to cast your vote and make your voice heard.</p>
+        </div>
+        <div class="guide-grid" role="list" aria-label="Step-by-step voting guide">
+
+          <article class="guide-card" data-step="1" role="listitem" aria-labelledby="step1Title">
+            <div class="guide-step-badge" aria-hidden="true">Step 01</div>
+            <div class="guide-icon" aria-hidden="true">📝</div>
+            <h3 class="guide-card-title" id="step1Title">Register as a Voter</h3>
+            <p class="guide-card-desc">Every Indian citizen aged 18+ can register as a voter. Submit Form 6 online at <strong>voters.eci.gov.in</strong> or visit your local BLO (Booth Level Officer).</p>
+            <div class="guide-tips" role="list" aria-label="Requirements">
+              <div class="tip-item" role="listitem">✅ Age must be 18+ years</div>
+              <div class="tip-item" role="listitem">✅ Must be Indian citizen</div>
+              <div class="tip-item" role="listitem">✅ Register in your constituency</div>
+            </div>
+            <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" class="guide-link" aria-label="Register as a voter on voters.eci.gov.in (opens in new tab)">Register Now →</a>
+          </article>
+
+          <article class="guide-card" data-step="2" role="listitem" aria-labelledby="step2Title">
+            <div class="guide-step-badge" aria-hidden="true">Step 02</div>
+            <div class="guide-icon" aria-hidden="true">🔍</div>
+            <h3 class="guide-card-title" id="step2Title">Check Your Name in Voter List</h3>
+            <p class="guide-card-desc">Before election day, verify your name in the official voter list using your name, EPIC number, or mobile number.</p>
+            <div class="guide-tips" role="list" aria-label="How to check">
+              <div class="tip-item" role="listitem">✅ Visit voters.eci.gov.in</div>
+              <div class="tip-item" role="listitem">✅ Use Voter Helpline: 1950</div>
+              <div class="tip-item" role="listitem">✅ Download Voter Slip</div>
+            </div>
+            <a href="https://electoralsearch.eci.gov.in" target="_blank" rel="noopener noreferrer" class="guide-link" aria-label="Search voter list on electoralsearch.eci.gov.in (opens in new tab)">Search Voter List →</a>
+          </article>
+
+          <article class="guide-card" data-step="3" role="listitem" aria-labelledby="step3Title">
+            <div class="guide-step-badge" aria-hidden="true">Step 03</div>
+            <div class="guide-icon" aria-hidden="true">🏛️</div>
+            <h3 class="guide-card-title" id="step3Title">Visit Your Polling Booth</h3>
+            <p class="guide-card-desc">On election day, visit your designated polling booth. Booths are usually open from <strong>7:00 AM to 6:00 PM</strong>. Carry your Voter ID or any approved photo ID.</p>
+            <div class="guide-tips" role="list" aria-label="What to bring">
+              <div class="tip-item" role="listitem">✅ Bring Voter ID / Aadhaar</div>
+              <div class="tip-item" role="listitem">✅ Reach early to avoid queues</div>
+              <div class="tip-item" role="listitem">✅ Check booth location online</div>
+            </div>
+            <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" class="guide-link" aria-label="Find your polling booth on voters.eci.gov.in (opens in new tab)">Find Your Booth →</a>
+          </article>
+
+          <article class="guide-card" data-step="4" role="listitem" aria-labelledby="step4Title">
+            <div class="guide-step-badge" aria-hidden="true">Step 04</div>
+            <div class="guide-icon" aria-hidden="true">🗳️</div>
+            <h3 class="guide-card-title" id="step4Title">Vote Using EVM</h3>
+            <p class="guide-card-desc">A polling officer will verify your identity. You'll be given a slip to proceed to the EVM. Press the button next to your chosen candidate.</p>
+            <div class="guide-tips" role="list" aria-label="Key facts">
+              <div class="tip-item" role="listitem">✅ Your vote is secret &amp; safe</div>
+              <div class="tip-item" role="listitem">✅ VVPAT shows your vote</div>
+              <div class="tip-item" role="listitem">✅ You can press NOTA if needed</div>
+            </div>
+            <div class="guide-link guide-link-disabled" aria-label="Voting is confidential">Vote Confidentially 🔒</div>
+          </article>
+
+        </div>
+
+        <div class="docs-banner" role="complementary" aria-labelledby="docsBannerTitle">
+          <div class="docs-banner-icon" aria-hidden="true">📄</div>
+          <div class="docs-banner-content">
+            <h3 id="docsBannerTitle">Accepted ID Documents at Polling Booth</h3>
+            <div class="docs-grid" role="list" aria-label="Accepted identity documents">
+              <div class="doc-item" role="listitem">🪪 Voter ID (EPIC)</div>
+              <div class="doc-item" role="listitem">🆔 Aadhaar Card</div>
+              <div class="doc-item" role="listitem">🛂 Passport</div>
+              <div class="doc-item" role="listitem">🚗 Driving Licence</div>
+              <div class="doc-item" role="listitem">🏦 Bank Passbook with Photo</div>
+              <div class="doc-item" role="listitem">🎓 Student ID Card</div>
+              <div class="doc-item" role="listitem">🏛️ PAN Card</div>
+              <div class="doc-item" role="listitem">💼 MNREGA Job Card</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="section section-alt" id="timeline" aria-labelledby="timelineHeading">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge" aria-hidden="true">📅 Election Phases</div>
+          <h2 class="section-title" id="timelineHeading">Election <span class="gradient-text">Timeline</span></h2>
+          <p class="section-subtitle">Understand the complete journey of an Indian General Election from announcement to results.</p>
+        </div>
+        <div class="timeline" role="list" aria-label="Indian election timeline phases">
+
+          <div class="timeline-item" data-phase="1" role="listitem" aria-labelledby="phase1Title">
+            <div class="timeline-dot" aria-hidden="true"><span>📢</span></div>
+            <div class="timeline-card">
+              <div class="timeline-phase" aria-hidden="true">Phase 1</div>
+              <h3 class="timeline-title" id="phase1Title">Election Announcement</h3>
+              <div class="timeline-date">Model Code of Conduct Begins</div>
+              <p class="timeline-desc">The Election Commission of India (ECI) announces the election schedule. The Model Code of Conduct (MCC) comes into effect immediately.</p>
+              <div class="timeline-highlights" role="list" aria-label="Phase 1 highlights">
+                <span class="highlight-tag" role="listitem">📋 MCC Active</span>
+                <span class="highlight-tag" role="listitem">📰 Date Announced</span>
+                <span class="highlight-tag" role="listitem">🗂️ Nominations Open</span>
               </div>
             </div>
           </div>
 
-          <!-- Quick Buttons -->
-          <div class="quick-buttons" id="quickButtons">
-            <button class="quick-btn" onclick="sendQuickMessage('how to vote')">🗳️ How to vote</button>
-            <button class="quick-btn" onclick="sendQuickMessage('check voter id')">🪪 Check Voter ID</button>
-            <button class="quick-btn" onclick="sendQuickMessage('voting rules')">📜 Voting rules</button>
-            <button class="quick-btn" onclick="sendQuickMessage('what is nota')">❌ What is NOTA</button>
-            <button class="quick-btn" onclick="sendQuickMessage('documents required')">📄 Documents needed</button>
-          </div>
-
-          <!-- Chat Input -->
-          <div class="chat-input-area">
-            <input
-              type="text"
-              id="chatInput"
-              class="chat-input"
-              placeholder="Type your question here..."
-              onkeypress="handleKeyPress(event)"
-              autocomplete="off"
-            />
-            <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========== VOTING GUIDE SECTION ========== -->
-  <section class="section" id="guide">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-badge">📋 Step by Step</div>
-        <h2 class="section-title">Your Complete <span class="gradient-text">Voting Guide</span></h2>
-        <p class="section-subtitle">Follow these simple steps to cast your vote and make your voice heard.</p>
-      </div>
-
-      <div class="guide-grid">
-
-        <div class="guide-card" data-step="1">
-          <div class="guide-step-badge">Step 01</div>
-          <div class="guide-icon">📝</div>
-          <h3 class="guide-card-title">Register as a Voter</h3>
-          <p class="guide-card-desc">Every Indian citizen aged 18+ can register as a voter. You need to submit Form 6 online at <strong>voters.eci.gov.in</strong> or visit your local BLO (Booth Level Officer).</p>
-          <div class="guide-tips">
-            <div class="tip-item">✅ Age must be 18+ years</div>
-            <div class="tip-item">✅ Must be Indian citizen</div>
-            <div class="tip-item">✅ Register in your constituency</div>
-          </div>
-          <a href="https://voters.eci.gov.in" target="_blank" rel="noopener" class="guide-link">Register Now →</a>
-        </div>
-
-        <div class="guide-card" data-step="2">
-          <div class="guide-step-badge">Step 02</div>
-          <div class="guide-icon">🔍</div>
-          <h3 class="guide-card-title">Check Your Name in Voter List</h3>
-          <p class="guide-card-desc">Before election day, always verify your name and details in the official voter list. You can check it online using your name, EPIC number, or mobile number.</p>
-          <div class="guide-tips">
-            <div class="tip-item">✅ Visit voters.eci.gov.in</div>
-            <div class="tip-item">✅ Use Voter Helpline: 1950</div>
-            <div class="tip-item">✅ Download Voter Slip</div>
-          </div>
-          <a href="https://electoralsearch.eci.gov.in" target="_blank" rel="noopener" class="guide-link">Search Voter List →</a>
-        </div>
-
-        <div class="guide-card" data-step="3">
-          <div class="guide-step-badge">Step 03</div>
-          <div class="guide-icon">🏛️</div>
-          <h3 class="guide-card-title">Visit Your Polling Booth</h3>
-          <p class="guide-card-desc">On election day, visit your designated polling booth. Polling booths are usually open from <strong>7:00 AM to 6:00 PM</strong>. Carry your Voter ID or any approved photo ID.</p>
-          <div class="guide-tips">
-            <div class="tip-item">✅ Bring Voter ID / Aadhaar</div>
-            <div class="tip-item">✅ Reach early to avoid queues</div>
-            <div class="tip-item">✅ Check booth location online</div>
-          </div>
-          <a href="https://voters.eci.gov.in" target="_blank" rel="noopener" class="guide-link">Find Your Booth →</a>
-        </div>
-
-        <div class="guide-card" data-step="4">
-          <div class="guide-step-badge">Step 04</div>
-          <div class="guide-icon">🗳️</div>
-          <h3 class="guide-card-title">Vote Using EVM</h3>
-          <p class="guide-card-desc">Inside the polling booth, a polling officer will verify your identity. You'll be given a slip to proceed to the EVM (Electronic Voting Machine). Press the button next to your chosen candidate.</p>
-          <div class="guide-tips">
-            <div class="tip-item">✅ Your vote is secret & safe</div>
-            <div class="tip-item">✅ VVPAT shows your vote</div>
-            <div class="tip-item">✅ You can press NOTA if needed</div>
-          </div>
-          <div class="guide-link guide-link-disabled">Vote Confidentially 🔒</div>
-        </div>
-
-      </div>
-
-      <!-- Documents Banner -->
-      <div class="docs-banner">
-        <div class="docs-banner-icon">📄</div>
-        <div class="docs-banner-content">
-          <h3>Accepted ID Documents at Polling Booth</h3>
-          <div class="docs-grid">
-            <div class="doc-item">🪪 Voter ID (EPIC)</div>
-            <div class="doc-item">🆔 Aadhaar Card</div>
-            <div class="doc-item">🛂 Passport</div>
-            <div class="doc-item">🚗 Driving Licence</div>
-            <div class="doc-item">🏦 Bank Passbook with Photo</div>
-            <div class="doc-item">🎓 Student ID Card</div>
-            <div class="doc-item">🏛️ PAN Card</div>
-            <div class="doc-item">💼 MNREGA Job Card</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ========== TIMELINE SECTION ========== -->
-  <section class="section section-alt" id="timeline">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-badge">📅 Election Phases</div>
-        <h2 class="section-title">Election <span class="gradient-text">Timeline</span></h2>
-        <p class="section-subtitle">Understand the complete journey of an Indian General Election from announcement to results.</p>
-      </div>
-
-      <div class="timeline">
-
-        <div class="timeline-item" data-phase="1">
-          <div class="timeline-dot">
-            <span>📢</span>
-          </div>
-          <div class="timeline-card">
-            <div class="timeline-phase">Phase 1</div>
-            <h3 class="timeline-title">Election Announcement</h3>
-            <div class="timeline-date">Model Code of Conduct Begins</div>
-            <p class="timeline-desc">The Election Commission of India (ECI) announces the election schedule. The Model Code of Conduct (MCC) comes into effect immediately. Political parties cannot make new promises or use government resources for campaigning.</p>
-            <div class="timeline-highlights">
-              <span class="highlight-tag">📋 MCC Active</span>
-              <span class="highlight-tag">📰 Date Announced</span>
-              <span class="highlight-tag">🗂️ Nominations Open</span>
+          <div class="timeline-item right" data-phase="2" role="listitem" aria-labelledby="phase2Title">
+            <div class="timeline-dot" aria-hidden="true"><span>📣</span></div>
+            <div class="timeline-card">
+              <div class="timeline-phase" aria-hidden="true">Phase 2</div>
+              <h3 class="timeline-title" id="phase2Title">Nomination &amp; Campaign Period</h3>
+              <div class="timeline-date">~4–6 Weeks Before Polling</div>
+              <p class="timeline-desc">Candidates file nomination papers. Parties campaign across constituencies. Rallies run until the 48-hour campaign silence period before voting.</p>
+              <div class="timeline-highlights" role="list" aria-label="Phase 2 highlights">
+                <span class="highlight-tag" role="listitem">🏃 Candidates File</span>
+                <span class="highlight-tag" role="listitem">📢 Rallies &amp; Debates</span>
+                <span class="highlight-tag" role="listitem">🔇 48hr Silence</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="timeline-item right" data-phase="2">
-          <div class="timeline-dot">
-            <span>📣</span>
-          </div>
-          <div class="timeline-card">
-            <div class="timeline-phase">Phase 2</div>
-            <h3 class="timeline-title">Nomination & Campaign Period</h3>
-            <div class="timeline-date">~4–6 Weeks Before Polling</div>
-            <p class="timeline-desc">Candidates file their nomination papers. After scrutiny, the final list is published. Candidates and parties campaign across constituencies. Rallies, speeches, and advertisements run until the campaign silence period (48 hours before voting).</p>
-            <div class="timeline-highlights">
-              <span class="highlight-tag">🏃 Candidates File</span>
-              <span class="highlight-tag">📢 Rallies & Debates</span>
-              <span class="highlight-tag">🔇 48hr Silence</span>
+          <div class="timeline-item" data-phase="3" role="listitem" aria-labelledby="phase3Title">
+            <div class="timeline-dot" aria-hidden="true"><span>🗳️</span></div>
+            <div class="timeline-card">
+              <div class="timeline-phase" aria-hidden="true">Phase 3</div>
+              <h3 class="timeline-title" id="phase3Title">Voting Day (Poll Day)</h3>
+              <div class="timeline-date">7:00 AM – 6:00 PM</div>
+              <p class="timeline-desc">Eligible voters visit their polling booths and cast votes on EVMs. VVPAT lets you verify your vote. NOTA is available as an option.</p>
+              <div class="timeline-highlights" role="list" aria-label="Phase 3 highlights">
+                <span class="highlight-tag" role="listitem">⏰ 7AM–6PM</span>
+                <span class="highlight-tag" role="listitem">🔒 Secret Ballot</span>
+                <span class="highlight-tag" role="listitem">🛡️ Security Deployed</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="timeline-item" data-phase="3">
-          <div class="timeline-dot">
-            <span>🗳️</span>
-          </div>
-          <div class="timeline-card">
-            <div class="timeline-phase">Phase 3</div>
-            <h3 class="timeline-title">Voting Day (Poll Day)</h3>
-            <div class="timeline-date">7:00 AM – 6:00 PM</div>
-            <p class="timeline-desc">Eligible voters visit their polling booths and cast votes on EVMs. VVPAT (Voter Verified Paper Audit Trail) lets you verify your vote. Security forces are deployed to ensure free and fair elections. NOTA is available as an option.</p>
-            <div class="timeline-highlights">
-              <span class="highlight-tag">⏰ 7AM–6PM</span>
-              <span class="highlight-tag">🔒 Secret Ballot</span>
-              <span class="highlight-tag">🛡️ Security Deployed</span>
+          <div class="timeline-item right" data-phase="4" role="listitem" aria-labelledby="phase4Title">
+            <div class="timeline-dot" aria-hidden="true"><span>📊</span></div>
+            <div class="timeline-card">
+              <div class="timeline-phase" aria-hidden="true">Phase 4</div>
+              <h3 class="timeline-title" id="phase4Title">Vote Counting &amp; Result Day</h3>
+              <div class="timeline-date">After Final Phase of Polling</div>
+              <p class="timeline-desc">EVM seals are checked and counting begins. The party with a majority (272+ seats) forms the government and its leader becomes Prime Minister.</p>
+              <div class="timeline-highlights" role="list" aria-label="Phase 4 highlights">
+                <span class="highlight-tag" role="listitem">🔢 Counting Begins</span>
+                <span class="highlight-tag" role="listitem">🏆 Winner Declared</span>
+                <span class="highlight-tag" role="listitem">🏛️ Govt. Formation</span>
+              </div>
             </div>
           </div>
+
         </div>
 
-        <div class="timeline-item right" data-phase="4">
-          <div class="timeline-dot">
-            <span>📊</span>
-          </div>
-          <div class="timeline-card">
-            <div class="timeline-phase">Phase 4</div>
-            <h3 class="timeline-title">Vote Counting & Result Day</h3>
-            <div class="timeline-date">After Final Phase of Polling</div>
-            <p class="timeline-desc">EVM seals are checked, and counting begins under strict supervision. Results are declared constituency-wise. The party or alliance with a majority (272+ seats in Lok Sabha) forms the government and its leader becomes the Prime Minister.</p>
-            <div class="timeline-highlights">
-              <span class="highlight-tag">🔢 Counting Begins</span>
-              <span class="highlight-tag">🏆 Winner Declared</span>
-              <span class="highlight-tag">🏛️ Govt. Formation</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Fun Facts -->
-      <div class="facts-section">
-        <h3 class="facts-title">💡 Did You Know?</h3>
-        <div class="facts-grid">
-          <div class="fact-card">
-            <div class="fact-icon">🗳️</div>
-            <p>India has the <strong>world's largest election</strong> with over 96 crore registered voters.</p>
-          </div>
-          <div class="fact-card">
-            <div class="fact-icon">⚡</div>
-            <p>India pioneered the use of <strong>Electronic Voting Machines (EVMs)</strong> on a large scale.</p>
-          </div>
-          <div class="fact-card">
-            <div class="fact-icon">❌</div>
-            <p><strong>NOTA</strong> (None of the Above) was introduced in 2013, giving voters the right to reject all candidates.</p>
-          </div>
-          <div class="fact-card">
-            <div class="fact-icon">📍</div>
-            <p>Remote polling booths are set up even in <strong>forests and mountains</strong> to ensure no voter is left behind.</p>
+        <div class="facts-section" aria-labelledby="factsTitle">
+          <h3 class="facts-title" id="factsTitle">💡 Did You Know?</h3>
+          <div class="facts-grid" role="list" aria-label="Interesting election facts">
+            <div class="fact-card" role="listitem"><div class="fact-icon" aria-hidden="true">🗳️</div><p>India has the <strong>world's largest election</strong> with over 96 crore registered voters.</p></div>
+            <div class="fact-card" role="listitem"><div class="fact-icon" aria-hidden="true">⚡</div><p>India pioneered the use of <strong>Electronic Voting Machines (EVMs)</strong> on a large scale.</p></div>
+            <div class="fact-card" role="listitem"><div class="fact-icon" aria-hidden="true">❌</div><p><strong>NOTA</strong> (None of the Above) was introduced in 2013, giving voters the right to reject all candidates.</p></div>
+            <div class="fact-card" role="listitem"><div class="fact-icon" aria-hidden="true">📍</div><p>Remote polling booths are set up even in <strong>forests and mountains</strong> to ensure no voter is left behind.</p></div>
           </div>
         </div>
       </div>
+    </section>
 
-    </div>
-  </section>
+  </main>
 
-  <!-- ========== FOOTER ========== -->
-  <footer class="footer">
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <span class="footer-flag">🇮🇳</span>
+          <span class="footer-flag" aria-hidden="true">🇮🇳</span>
           <div>
             <div class="footer-name">Election Guide AI Assistant</div>
             <div class="footer-tagline">Empowering every Indian voter</div>
           </div>
         </div>
-        <div class="footer-links">
-          <a href="https://eci.gov.in" target="_blank" rel="noopener">ECI Official Site</a>
-          <a href="https://voters.eci.gov.in" target="_blank" rel="noopener">Voter Registration</a>
-          <a href="https://electoralsearch.eci.gov.in" target="_blank" rel="noopener">Voter Search</a>
-        </div>
+        <nav class="footer-links" aria-label="External resources">
+          <a href="https://eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="ECI Official Site (opens in new tab)">ECI Official Site</a>
+          <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="Voter Registration portal (opens in new tab)">Voter Registration</a>
+          <a href="https://electoralsearch.eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="Voter Search portal (opens in new tab)">Voter Search</a>
+        </nav>
       </div>
       <div class="footer-bottom">
         <p>© 2024 Election Guide AI · For educational purposes only · Data sourced from ECI</p>
-        <p class="footer-helpline">📞 Voter Helpline: <strong>1950</strong></p>
+        <p class="footer-helpline">📞 Voter Helpline: <strong><a href="tel:1950" aria-label="Call Voter Helpline 1950">1950</a></strong></p>
       </div>
     </div>
   </footer>
 
-  <!-- Back to Top -->
-  <button class="back-to-top" id="backToTop" onclick="scrollToSection('home')" title="Back to top">↑</button>
+  <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top of page" title="Back to top">↑</button>
 
   <script src="script.js"></script>
 </body>
