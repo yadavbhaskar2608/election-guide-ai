@@ -26,6 +26,9 @@ const NAVBAR_SCROLL_THRESHOLD = 60;
 /** Scroll threshold (px) to show Back-to-Top button */
 const BACK_TO_TOP_THRESHOLD = 400;
 
+/** Number of animated dots in the typing indicator */
+const TYPING_DOTS_COUNT = 3;
+
 /** Viewport offset (px) below navbar to detect active section */
 const ACTIVE_SECTION_OFFSET = 80;
 
@@ -413,7 +416,7 @@ function showTyping() {
   indicator.className = 'typing-indicator';
   indicator.setAttribute('aria-hidden', 'true');
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < TYPING_DOTS_COUNT; i++) {
     const dot = document.createElement('div');
     dot.className = 'typing-dot';
     indicator.appendChild(dot);
@@ -494,7 +497,8 @@ function sendQuickMessage(topic) {
  * Clears all chat messages and shows a fresh greeting.
  */
 function clearChat() {
-  chatMessages.innerHTML = '';
+  // Use replaceChildren() for safe DOM clearing (avoids innerHTML assignment)
+  chatMessages.replaceChildren();
   appendMessage('Chat cleared! 🧹 Feel free to ask me anything about Indian elections.', false);
 }
 
@@ -587,64 +591,66 @@ const OBSERVER_OPTIONS = { threshold: 0.1, rootMargin: '0px 0px -60px 0px' };
 
 /**
  * Reveals animated cards when they enter the viewport.
- * @type {IntersectionObserver}
+ * @type {IntersectionObserver|null}
  */
-const cardObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
-      cardObserver.unobserve(entry.target);
-    }
-  });
-}, OBSERVER_OPTIONS);
+const cardObserver = (typeof IntersectionObserver !== 'undefined')
+  ? new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, OBSERVER_OPTIONS)
+  : null;
 
 // ============================================================
-// INITIALISATION
+// INITIALISATION — Split into focused sub-functions
 // ============================================================
 
 /**
- * Initialises the application after the DOM is fully loaded.
- * Caches DOM references, attaches event listeners, and sets up observers.
+ * Attaches all chat-related event listeners.
+ * Covers send button, Enter key, clear button, and quick-topic delegation.
  */
-document.addEventListener('DOMContentLoaded', () => {
-  // Cache DOM references
-  chatMessages = document.getElementById('chatMessages');
-  chatInput    = document.getElementById('chatInput');
-  sendBtn      = document.getElementById('sendBtn');
-  navbar       = document.getElementById('navbar');
-  backToTop    = document.getElementById('backToTop');
-  hamburger    = document.getElementById('hamburger');
-  navLinks     = document.getElementById('navLinks');
-  navLinkItems = document.querySelectorAll('.nav-link');
-
-  // Guard: exit early if core elements are missing (e.g., test runner page)
-  if (!chatMessages || !chatInput || !sendBtn || !navbar) return;
-
-  // Scroll events
-  window.addEventListener('scroll', handleScroll, { passive: true });
-
-  // Chat events
+function initChatListeners() {
   sendBtn.addEventListener('click', sendMessage);
+
   chatInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
-  document.getElementById('clearChatBtn').addEventListener('click', clearChat);
 
-  // Quick buttons (event delegation)
-  document.getElementById('quickButtons').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-topic]');
-    if (btn) sendQuickMessage(btn.dataset.topic);
-  });
+  const clearBtn = document.getElementById('clearChatBtn');
+  if (clearBtn) clearBtn.addEventListener('click', clearChat);
 
-  // Hamburger toggle
+  const quickButtons = document.getElementById('quickButtons');
+  if (quickButtons) {
+    quickButtons.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-topic]');
+      if (btn) sendQuickMessage(btn.dataset.topic);
+    });
+  }
+}
+
+/**
+ * Attaches navigation event listeners.
+ * Covers hamburger toggle, Escape key, nav links, hero buttons, and back-to-top.
+ */
+function initNavListeners() {
   hamburger.addEventListener('click', toggleMenu);
 
-  // Nav links — smooth scroll
-  navLinkItems.forEach(link => {
+  // Escape key closes mobile menu (accessibility)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+      toggleMenu();
+      hamburger.focus();
+    }
+  });
+
+  navLinkItems.forEach((link) => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const target = link.getAttribute('href').replace('#', '');
@@ -652,7 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Hero buttons
+  /** @type {Object.<string, string>} Maps button IDs to target section IDs */
   const heroButtonMap = {
     btnChatAssistant: 'assistant',
     btnVotingGuide:   'guide',
@@ -663,25 +669,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) btn.addEventListener('click', () => scrollToSection(sectionId));
   });
 
-  // Scroll indicator
   const scrollIndicator = document.getElementById('scrollIndicator');
   if (scrollIndicator) {
     scrollIndicator.addEventListener('click', () => scrollToSection('assistant'));
   }
 
-  // Back to top
   backToTop.addEventListener('click', () => scrollToSection('home'));
+}
 
-  // Card scroll-in animations
-  document.querySelectorAll('.guide-card, .timeline-card, .fact-card, .stat-card').forEach(el => {
+/**
+ * Attaches scroll handling, intersection observers, and external link tracking.
+ */
+function initScrollListeners() {
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  document.querySelectorAll('.guide-card, .timeline-card, .fact-card, .stat-card').forEach((el) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(24px)';
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    cardObserver.observe(el);
+    if (cardObserver) cardObserver.observe(el);
   });
 
-  // External link GA4 tracking
-  document.querySelectorAll('a[target="_blank"]').forEach(link => {
+  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
     link.addEventListener('click', () => {
       if (typeof gtag === 'function') {
         gtag('event', 'external_link_click', {
@@ -691,7 +700,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-});
+}
+
+/**
+ * Entry point: caches DOM references then delegates to init sub-functions.
+ * Guarded so this file can be safely required in Node.js for unit testing.
+ */
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Cache DOM references once at startup
+    chatMessages = document.getElementById('chatMessages');
+    chatInput    = document.getElementById('chatInput');
+    sendBtn      = document.getElementById('sendBtn');
+    navbar       = document.getElementById('navbar');
+    backToTop    = document.getElementById('backToTop');
+    hamburger    = document.getElementById('hamburger');
+    navLinks     = document.getElementById('navLinks');
+    navLinkItems = document.querySelectorAll('.nav-link');
+
+    // Guard: exit early if core elements are missing (e.g., test runner page)
+    if (!chatMessages || !chatInput || !sendBtn || !navbar) return;
+
+    initChatListeners();
+    initNavListeners();
+    initScrollListeners();
+  });
+}
 
 // ============================================================
 // PUBLIC API (exported for testing)

@@ -81,6 +81,17 @@ function assertNotContains(str, substr, msg = '') {
   }
 }
 
+/**
+ * Asserts that a value is falsy.
+ * @param {*} value - Value to check
+ * @param {string} [msg] - Optional context message
+ */
+function assertFalse(value, msg = '') {
+  if (value) {
+    throw new Error(`${msg ? msg + ': ' : ''}Expected falsy, got ${JSON.stringify(value)}`);
+  }
+}
+
 // ============================================================
 // IMPORT FUNCTIONS UNDER TEST
 // (works both in Node via module.exports and in browser via globals)
@@ -294,6 +305,104 @@ test('Security — renderMarkdown handles javascript: URI attempt', () => {
 });
 
 // ============================================================
+// ADDITIONAL EDGE-CASE TESTS
+// ============================================================
+
+// --- assertFalse self-tests ---
+test('assertFalse — passes on false', () => {
+  assertFalse(false);
+});
+test('assertFalse — passes on 0', () => {
+  assertFalse(0);
+});
+test('assertFalse — passes on empty string', () => {
+  assertFalse('');
+});
+
+// --- escapeHtml extra edge cases ---
+test('escapeHtml — leaves numeric content unchanged', () => {
+  assertEqual(escapeHtml('Hello 123'), 'Hello 123');
+});
+test('escapeHtml — escapes multiple ampersands', () => {
+  const out = escapeHtml('a&b&c');
+  assertEqual(out, 'a&amp;b&amp;c');
+});
+test('escapeHtml — handles all special chars together', () => {
+  const out = escapeHtml('<>&"\'')
+  assertContains(out, '&lt;');
+  assertContains(out, '&gt;');
+  assertContains(out, '&amp;');
+  assertContains(out, '&quot;');
+  assertContains(out, '&#39;');
+});
+test('escapeHtml — very long string does not throw', () => {
+  const long = 'a'.repeat(10000);
+  assertEqual(escapeHtml(long).length, 10000);
+});
+
+// --- renderMarkdown extra edge cases ---
+test('renderMarkdown — empty string produces paragraph tags', () => {
+  const out = renderMarkdown('');
+  assertTrue(out.startsWith('<p>') && out.endsWith('</p>'), 'Should wrap in <p>');
+});
+test('renderMarkdown — multiple bold items all rendered', () => {
+  const out = renderMarkdown('**a** and **b**');
+  assertEqual((out.match(/<strong>/g) || []).length, 2, 'Should have 2 <strong> tags');
+});
+test('renderMarkdown — multiple italic items all rendered', () => {
+  const out = renderMarkdown('*x* and *y*');
+  assertEqual((out.match(/<em>/g) || []).length, 2, 'Should have 2 <em> tags');
+});
+test('renderMarkdown — does not produce raw <a> href tags', () => {
+  const out = renderMarkdown('[link](https://example.com)');
+  assertNotContains(out, '<a ', 'Markdown links must not become <a> tags');
+});
+
+// --- getTime extra edge cases ---
+test('getTime — does not return undefined', () => {
+  assertFalse(getTime() === 'undefined', 'getTime should not return string "undefined"');
+});
+test('getTime — result is a string of at least 4 chars', () => {
+  assertTrue(getTime().length >= 4, 'Time string should be at least 4 characters long');
+});
+
+// --- findAnswer extra topics and edge cases ---
+test('findAnswer — "hi" returns greeting answer', () => {
+  assertContains(findAnswer('hi'), 'Namaste');
+});
+test('findAnswer — "hey" returns greeting answer', () => {
+  assertContains(findAnswer('hey'), 'Namaste');
+});
+test('findAnswer — "hii" returns greeting answer', () => {
+  assertContains(findAnswer('hii'), 'Namaste');
+});
+test('findAnswer — "voting procedure" routes to howToVote', () => {
+  assertContains(findAnswer('voting procedure'), 'Step 1');
+});
+test('findAnswer — "polling booth rules" routes to votingRules', () => {
+  assertContains(findAnswer('polling booth rules'), 'DOs at the Polling Booth');
+});
+test('findAnswer — "new voter id" routes to voterId', () => {
+  assertContains(findAnswer('new voter id'), 'EPIC');
+});
+test('findAnswer — "nota option" routes to nota topic', () => {
+  assertContains(findAnswer('nota option'), 'None Of The Above');
+});
+test('findAnswer — "NOTA" uppercase routes to nota', () => {
+  assertContains(findAnswer('NOTA'), 'NOTA');
+});
+test('findAnswer — "am i eligible to vote" routes to eligibility', () => {
+  assertContains(findAnswer('am i eligible to vote'), 'citizen of India');
+});
+test('findAnswer — only whitespace returns default', () => {
+  assertContains(findAnswer('   '), '1950');
+});
+test('findAnswer — special characters handled gracefully', () => {
+  const result = findAnswer('!@#$%^&*()');
+  assertTrue(typeof result === 'string' && result.length > 0, 'Should return a non-empty string');
+});
+
+// ============================================================
 // EXPORT RESULTS
 // ============================================================
 
@@ -311,13 +420,14 @@ function getResults() {
 
 if (typeof module !== 'undefined' && module.exports) {
   // Node.js / CommonJS environment
-  module.exports = { getResults, test, assertEqual, assertTrue, assertContains, assertNotContains };
+  module.exports = { getResults, test, assertEqual, assertTrue, assertFalse, assertContains, assertNotContains };
 } else {
   // Browser environment — attach to window so test-runner.html can call getResults()
   window.getResults          = getResults;
   window.test                = test;
   window.assertEqual         = assertEqual;
   window.assertTrue          = assertTrue;
+  window.assertFalse         = assertFalse;
   window.assertContains      = assertContains;
   window.assertNotContains   = assertNotContains;
 }

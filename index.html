@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Security headers -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src https://www.google-analytics.com; img-src 'self' data: https://www.google-analytics.com;" />
+    content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src https://www.google-analytics.com; img-src 'self' data: https://www.google-analytics.com https://maps.gstatic.com https://maps.googleapis.com; frame-src https://www.google.com;" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta http-equiv="X-Frame-Options" content="DENY" />
 
@@ -15,6 +15,9 @@
   <meta name="keywords" content="India election guide, how to vote India, voter ID, EVM, NOTA, Lok Sabha 2024, voter registration, election commission India, polling booth" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#FF6B35" />
+  <meta name="author" content="Bhaskar Yadav" />
+  <meta name="google-site-verification" content="election-guide-ai-yadavbhaskar2608-github-io" />
+  <link rel="canonical" href="https://yadavbhaskar2608.github.io/election-guide-ai/" />
   <title>Election Guide AI Assistant (India)</title>
 
   <!-- Open Graph / Twitter Card -->
@@ -51,6 +54,8 @@
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet" href="style.css" />
 
   <!-- Google Analytics 4 -->
@@ -59,7 +64,12 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-XSQDPT6TTK', { page_title: 'Election Guide AI Assistant', page_location: window.location.href });
+    gtag('config', 'G-XSQDPT6TTK', {
+      page_title: 'Election Guide AI Assistant',
+      page_location: window.location.href,
+      send_page_view: true,
+      anonymize_ip: true
+    });
   </script>
 </head>
 <body>
@@ -270,6 +280,29 @@
             </div>
           </div>
         </div>
+
+        <!-- Google Maps: Election Commission of India -->
+        <div class="map-section" role="complementary" aria-labelledby="mapSectionTitle">
+          <div class="map-header">
+            <div class="section-badge" aria-hidden="true">📍 Google Maps</div>
+            <h3 class="map-title" id="mapSectionTitle">Find <span class="gradient-text">Polling Booth</span> Near You</h3>
+            <p class="map-subtitle">Use the map below to locate the Election Commission of India. Visit <a href="https://voters.eci.gov.in" target="_blank" rel="noopener noreferrer" aria-label="voters.eci.gov.in (opens in new tab)">voters.eci.gov.in</a> or call <strong>1950</strong> to find your nearest polling booth.</p>
+          </div>
+          <div class="map-wrapper">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3501.9025258296087!2d77.20661841508064!3d28.63384298241836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b741d057%3A0xcdee88e47393c3f5!2sElection%20Commission%20of%20India!5e0!3m2!1sen!2sin!4v1619854421234!5m2!1sen!2sin"
+              width="100%"
+              height="340"
+              style="border:0;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Election Commission of India location on Google Maps"
+              aria-label="Embedded Google Map showing Election Commission of India headquarters in New Delhi">
+            </iframe>
+          </div>
+        </div>
+
       </div>
     </section>
 
